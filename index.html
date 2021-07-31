@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Commerce Project</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>    
+</head>
+<body>
+    
+<nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+    <!-- Brand/logo -->
+    <a class="navbar-brand" href="#">E-Commerce Project</a>
+    
+    <!-- Links -->
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <a class="nav-link" href="index.html">Products</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="cart.html">Cart</a>
+      </li>
+    </ul>
+  </nav>  
+  <div class="container">
+    <div class="row" id="divProducts">
+
+    </div>
+  </div>
+  
+
+  <script>
+    $(document).ready(function(){
+        $.post("https://selfsiksha.igaptechnologies.com/api/products",
+        {
+          trainerid: 2,
+          userid: 0
+        },
+        function(data, status){
+
+            let cartproducts = "";
+            if(localStorage.getItem("cartproducts") != null)
+                cartproducts = localStorage.getItem("cartproducts");
+
+            let products = cartproducts.split(",");
+            
+
+            $("#divProducts").html("");
+            data.products.forEach(element => {
+                let str = "<div class='col-lg-4'>";
+                str += "<div class='card' style='padding:10px;'>";
+                str += "<h6>" + element.name + "</h6>";
+                str += "<img class='img-fluid' src='https://selfsiksha.igaptechnologies.com/productpics/" + element.imagename + ".png' />";
+                str += "<div class='row'><div class='col-lg-6'>MRP: <del>&#8377; " + Number(element.mrp).toFixed(2) + "</del>";
+                str += "<br />Price: &#8377; " + Number(element.price).toFixed(2) + "</div>";
+
+                if(products.indexOf(element.id) == -1)
+                    str += "<div class='col-lg-6'><br /><button class='btn btn-warning pull-right' onclick='addtocart(this, " + element.id + ")'>Add To Cart</button></div></div>";
+                str += "</div>";
+                str += "</div>";
+                $("#divProducts").html($("#divProducts").html() + str);
+
+            });
+        });
+    });
+
+    function addtocart(ctrl, productid)
+    {
+        let cartproducts = "";
+        if(localStorage.getItem("cartproducts") != null)
+            cartproducts = localStorage.getItem("cartproducts");
+        cartproducts += (cartproducts == "" ? "" : ",") + productid;
+        localStorage.setItem("cartproducts", cartproducts);
+        console.log(cartproducts);
+        ctrl.style.display = "none";
+    }
+    </script>
+
+</body>
+</html>
